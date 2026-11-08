@@ -1,0 +1,6 @@
+{
+  "name": "SHD Media",
+  "description": "A social video & photo sharing platform with Google Sign-In, Cloud Firestore data storage, real-time notifications, direct messaging, and Gemini AI assistance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,210 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile with custom username and gallery profile picture",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Auth UID" },
+        "username": { "type": "string", "description": "Custom username handle" },
+        "displayName": { "type": "string", "description": "Display name" },
+        "avatarUrl": { "type": "string", "description": "Gallery profile photo Base64" },
+        "bio": { "type": "string", "description": "User bio" },
+        "profileSetupCompleted": { "type": "boolean", "description": "Whether user completed custom username and gallery PP setup" },
+        "followersCount": { "type": "integer", "description": "Follower count" },
+        "followingCount": { "type": "integer", "description": "Following count" },
+        "postsCount": { "type": "integer", "description": "Total posts count" },
+        "likedCategories": { "type": "array", "description": "Categories liked by user" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Update timestamp" }
+      },
+      "required": ["userId", "username", "displayName", "createdAt"]
+    },
+    "AppReleaseInfo": {
+      "title": "AppReleaseInfo",
+      "description": "App release build metadata for AppUpdateManager",
+      "type": "object",
+      "properties": {
+        "appName": { "type": "string", "description": "App name" },
+        "buildNumber": { "type": "integer", "description": "Monotonic build number" },
+        "versionCode": { "type": "integer", "description": "Android versionCode" },
+        "versionName": { "type": "string", "description": "Version string" },
+        "appSizeBytes": { "type": "integer", "description": "APK size in bytes" },
+        "sha256": { "type": "string", "description": "Real SHA-256 hash of compiled APK binary" },
+        "buildTimestampUtc": { "type": "string", "description": "UTC timestamp when APK was compiled" },
+        "catalogue": { "type": "array", "description": "Release changelog items" },
+        "apkDownloadUrl": { "type": "string", "description": "Optional remote APK URL" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Release timestamp" }
+      },
+      "required": ["appName", "buildNumber", "versionName", "appSizeBytes", "updatedAt"]
+    },
+    "Post": {
+      "title": "Post",
+      "description": "Feed post with photo or video media, caption, tags, and counters",
+      "type": "object",
+      "properties": {
+        "authorId": { "type": "string", "description": "Author UID" },
+        "authorUsername": { "type": "string", "description": "Author username handle" },
+        "authorDisplayName": { "type": "string", "description": "Author display name" },
+        "authorAvatarUrl": { "type": "string", "description": "Author avatar photo" },
+        "imageUrl": { "type": "string", "description": "Image photo or video thumbnail base64/URL" },
+        "videoUrl": { "type": "string", "description": "Video reference or inline base64" },
+        "mediaType": { "type": "string", "enum": ["image", "video"], "description": "Media type" },
+        "videoDurationSeconds": { "type": "integer", "description": "Video duration in seconds (max 300s)" },
+        "videoWidth": { "type": "integer", "description": "Video width in pixels" },
+        "videoHeight": { "type": "integer", "description": "Video height in pixels" },
+        "videoFps": { "type": "integer", "description": "Video frame rate in FPS (max 60)" },
+        "videoChunkCount": { "type": "integer", "description": "Number of chunks stored in video_chunks subcollection" },
+        "caption": { "type": "string", "description": "Post caption" },
+        "filterName": { "type": "string", "description": "Visual filter name applied" },
+        "tags": { "type": "array", "description": "Hashtags" },
+        "contentCategory": { "type": "string", "description": "Content category" },
+        "likesCount": { "type": "integer", "description": "Total likes count" },
+        "commentsCount": { "type": "integer", "description": "Total comments count" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Update timestamp" }
+      },
+      "required": ["authorId", "authorUsername", "imageUrl", "createdAt"]
+    },
+    "VideoChunk": {
+      "title": "VideoChunk",
+      "description": "Binary base64 chunk of an uploaded video stored in Firestore",
+      "type": "object",
+      "properties": {
+        "postId": { "type": "string", "description": "Parent post ID" },
+        "authorId": { "type": "string", "description": "Author UID" },
+        "index": { "type": "integer", "description": "Sequential chunk index" },
+        "data": { "type": "string", "description": "Base64 encoded video slice" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["postId", "authorId", "index", "data", "createdAt"]
+    },
+    "Like": {
+      "title": "Like",
+      "description": "Like record on a post",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Liking user UID" },
+        "postId": { "type": "string", "description": "Target post ID" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp via serverTimestamp" }
+      },
+      "required": ["userId", "postId", "createdAt"]
+    },
+    "FollowRecord": {
+      "title": "FollowRecord",
+      "description": "Follower relationship record",
+      "type": "object",
+      "properties": {
+        "followerId": { "type": "string", "description": "Follower user UID" },
+        "targetUserId": { "type": "string", "description": "Followed user UID" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp via serverTimestamp" }
+      },
+      "required": ["followerId", "targetUserId", "createdAt"]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "Comment on a post",
+      "type": "object",
+      "properties": {
+        "postId": { "type": "string", "description": "Target post ID" },
+        "authorId": { "type": "string", "description": "Author UID" },
+        "authorUsername": { "type": "string", "description": "Author username handle" },
+        "authorAvatarUrl": { "type": "string", "description": "Author avatar photo" },
+        "text": { "type": "string", "description": "Comment message" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp via serverTimestamp" }
+      },
+      "required": ["postId", "authorId", "authorUsername", "text", "createdAt"]
+    },
+    "DirectMessage": {
+      "title": "DirectMessage",
+      "description": "Direct message in a chat conversation with Instagram-style quote reply and heart reaction support",
+      "type": "object",
+      "properties": {
+        "senderId": { "type": "string", "description": "Sender UID" },
+        "recipientId": { "type": "string", "description": "Recipient UID" },
+        "conversationId": { "type": "string", "description": "Composite conversation ID" },
+        "text": { "type": "string", "description": "Message content" },
+        "imageUrl": { "type": "string", "description": "Optional attached image or screenshot" },
+        "replyToMessageId": { "type": "string", "description": "Optional quoted message ID" },
+        "replyToText": { "type": "string", "description": "Optional quoted message text" },
+        "replyToSenderUsername": { "type": "string", "description": "Optional quoted message sender username" },
+        "reactionEmoji": { "type": "string", "description": "Optional Instagram-style heart/emoji reaction" },
+        "read": { "type": "boolean", "description": "Read status" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp via serverTimestamp" }
+      },
+      "required": ["senderId", "recipientId", "conversationId", "text", "createdAt"]
+    },
+    "Conversation": {
+      "title": "Conversation",
+      "description": "Direct chat conversation metadata",
+      "type": "object",
+      "properties": {
+        "participants": { "type": "array", "description": "List of participant UIDs" },
+        "lastMessageText": { "type": "string", "description": "Snippet of last message" },
+        "lastSenderId": { "type": "string", "description": "Sender of last message" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Timestamp of last activity" }
+      },
+      "required": ["participants", "updatedAt"]
+    },
+    "NotificationItem": {
+      "title": "NotificationItem",
+      "description": "Real-time user notification for likes, comments, DMs, follows",
+      "type": "object",
+      "properties": {
+        "recipientId": { "type": "string", "description": "Target user UID receiving notification" },
+        "senderId": { "type": "string", "description": "Triggering user UID" },
+        "senderUsername": { "type": "string", "description": "Triggering user username" },
+        "senderAvatarUrl": { "type": "string", "description": "Triggering user avatar" },
+        "type": { "type": "string", "enum": ["like", "comment", "message", "follow"], "description": "Notification kind" },
+        "title": { "type": "string", "description": "Notification title" },
+        "body": { "type": "string", "description": "Notification message summary" },
+        "targetId": { "type": "string", "description": "Associated post or conversation ID" },
+        "read": { "type": "boolean", "description": "Read flag" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp via serverTimestamp" }
+      },
+      "required": ["recipientId", "senderId", "type", "title", "body", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Public user profiles"
+    },
+    "/users/{userId}/followers/{followerId}": {
+      "schema": "FollowRecord",
+      "description": "Follower records for a user"
+    },
+    "/app_releases/{releaseId}": {
+      "schema": "AppReleaseInfo",
+      "description": "App release metadata for AppUpdateManager"
+    },
+    "/posts/{postId}": {
+      "schema": "Post",
+      "description": "All public posts in the feed"
+    },
+    "/posts/{postId}/video_chunks/{chunkId}": {
+      "schema": "VideoChunk",
+      "description": "Chunked video data for video posts"
+    },
+    "/posts/{postId}/likes/{userId}": {
+      "schema": "Like",
+      "description": "Like records per post"
+    },
+    "/posts/{postId}/comments/{commentId}": {
+      "schema": "Comment",
+      "description": "Comments on a post"
+    },
+    "/conversations/{conversationId}": {
+      "schema": "Conversation",
+      "description": "Direct message chat headers"
+    },
+    "/conversations/{conversationId}/messages/{messageId}": {
+      "schema": "DirectMessage",
+      "description": "Messages inside direct chat conversations"
+    },
+    "/users/{userId}/notifications/{notificationId}": {
+      "schema": "NotificationItem",
+      "description": "User notification inbox"
+    }
+  }
+}
